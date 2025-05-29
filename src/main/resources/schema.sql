@@ -29,32 +29,19 @@ CREATE TABLE IF NOT EXISTS `book_author` (
     `id` BIGINT NOT NULL AUTO_INCREMENT,
     `id_book` BIGINT,
     `id_author` BIGINT,
-    PRIMARY KEY (`id`)
+    PRIMARY KEY (`id`),
+    CONSTRAINT `fk_book_author_book_id_relation` FOREIGN KEY(`id_book`) REFERENCES `book`(`id`) ON UPDATE CASCADE ON DELETE RESTRICT,
+    CONSTRAINT `fk_book_author_author_id_relation` FOREIGN KEY(`id_author`) REFERENCES `author`(`id`) ON UPDATE CASCADE ON DELETE RESTRICT
 );
 
 CREATE TABLE IF NOT EXISTS `book_genre` (
     `id` BIGINT NOT NULL AUTO_INCREMENT,
     `id_book` BIGINT,
     `id_genre` BIGINT,
-    PRIMARY KEY (`id`)
+    PRIMARY KEY (`id`),
+    CONSTRAINT `fk_book_genre_book_id_relation` FOREIGN KEY(`id_book`) REFERENCES `book`(`id`) ON UPDATE CASCADE ON DELETE RESTRICT,
+    CONSTRAINT `fk_book_genre_genre_id_relation` FOREIGN KEY(`id_genre`) REFERENCES `genre`(`id`) ON UPDATE CASCADE ON DELETE RESTRICT
 );
-
--- Foreign key constraints
-ALTER TABLE `book_genre`
-ADD CONSTRAINT `fk_book_genre_id_book` FOREIGN KEY(`id_book`) REFERENCES `book`(`id`)
-ON UPDATE CASCADE ON DELETE RESTRICT;
-
-ALTER TABLE `book_genre`
-ADD CONSTRAINT `fk_book_genre_id_genre` FOREIGN KEY(`id_genre`) REFERENCES `genre`(`id`)
-ON UPDATE CASCADE ON DELETE RESTRICT;
-
-ALTER TABLE `book_author`
-ADD CONSTRAINT `fk_book_author_id_book` FOREIGN KEY(`id_book`) REFERENCES `book`(`id`)
-ON UPDATE CASCADE ON DELETE RESTRICT;
-
-ALTER TABLE `book_author`
-ADD CONSTRAINT `fk_book_author_id_author` FOREIGN KEY(`id_author`) REFERENCES `author`(`id`)
-ON UPDATE CASCADE ON DELETE RESTRICT;
 
 -- Insert sample data
 INSERT INTO `author` (name) VALUES
