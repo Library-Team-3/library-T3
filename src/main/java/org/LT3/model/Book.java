@@ -85,7 +85,6 @@ public class Book {
         }
         this.genres.add(genre);
     }
-
     @Override
     public String toString() {
         StringBuilder authorsStr = new StringBuilder();
