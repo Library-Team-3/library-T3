@@ -112,9 +112,23 @@ public class BookView {
         }
 
         Book book = new Book(title, description, isbn, authors, genres);
-        bookController.saveBook(book);
 
-        System.out.println("Book added successfully!");
+        System.out.println("\n=== Book information to be saved ===");
+        System.out.println("Title: " + book.getTitle());
+        System.out.println("Description: " + book.getDescription());
+        System.out.println("ISBN: " + book.getIsbn());
+        System.out.println("Authors: " + getAuthorsString(book.getAuthors()));
+        System.out.println("Genres: " + getGenresString(book.getGenres()));
+
+        System.out.print("\nAre you sure you want to save this book? (yes/no): ");
+        String confirmation = scanner.nextLine();
+
+        if (confirmation.equalsIgnoreCase("yes") || confirmation.equalsIgnoreCase("y")) {
+            bookController.saveBook(book);
+            System.out.println("Book added successfully!");
+        } else {
+            System.out.println("Book creation cancelled.");
+        }
     }
 
     private void updateBook() {
@@ -125,41 +139,158 @@ public class BookView {
         Long id = scanner.nextLong();
         scanner.nextLine();
 
-        System.out.print("Enter new title: ");
-        String title = scanner.nextLine();
-
-        System.out.print("Enter new description: ");
-        String description = scanner.nextLine();
-
-        System.out.print("Enter new ISBN: ");
-        String isbn = scanner.nextLine();
-
-        List<Author> authors = new ArrayList<>();
-        System.out.print("Enter number of authors: ");
-        int authorCount = scanner.nextInt();
-        scanner.nextLine();
-
-        for (int i = 0; i < authorCount; i++) {
-            System.out.print("Enter author " + (i + 1) + " name: ");
-            String authorName = scanner.nextLine();
-            authors.add(new Author(authorName));
+        Book existingBook = bookController.findByID(id);
+        if (existingBook == null) {
+            System.out.println("Book with ID " + id + " not found.");
+            return;
         }
 
-        List<Genre> genres = new ArrayList<>();
-        System.out.print("Enter number of genres: ");
-        int genreCount = scanner.nextInt();
-        scanner.nextLine();
+        System.out.println("\nOriginal book information:");
+        System.out.println(existingBook);
 
-        for (int i = 0; i < genreCount; i++) {
-            System.out.print("Enter genre " + (i + 1) + " name: ");
-            String genreName = scanner.nextLine();
-            genres.add(new Genre(genreName));
+        Book updatedBook = new Book(
+                existingBook.getId(),
+                existingBook.getTitle(),
+                existingBook.getDescription(),
+                existingBook.getIsbn(),
+                new ArrayList<>(existingBook.getAuthors()),
+                new ArrayList<>(existingBook.getGenres()));
+
+        boolean continueUpdating = true;
+        boolean hasChanges = false;
+        while (continueUpdating) {
+            if (hasChanges) {
+                System.out.println("\n=== Current book information ===");
+                System.out.println(updatedBook);
+            }
+
+            System.out.println("\n=== What would you like to update? ===");
+            System.out.println("1. Title");
+            System.out.println("2. Description");
+            System.out.println("3. ISBN");
+            System.out.println("4. Authors");
+            System.out.println("5. Genres");
+            System.out.println("0. Finish updating");
+            System.out.print("Choose field to update: ");
+
+            int choice = scanner.nextInt();
+            scanner.nextLine();
+
+            switch (choice) {
+                case 0:
+                    continueUpdating = false;
+                    break;
+                case 1:
+                    System.out.print("Enter new title (current: " + updatedBook.getTitle() + "): ");
+                    String newTitle = scanner.nextLine();
+                    if (!newTitle.trim().isEmpty()) {
+                        updatedBook.setTitle(newTitle);
+                        hasChanges = true;
+                        System.out.println("Title updated!");
+                    }
+                    break;
+                case 2:
+                    System.out.print("Enter new description (current: " + updatedBook.getDescription() + "): ");
+                    String newDescription = scanner.nextLine();
+                    if (!newDescription.trim().isEmpty()) {
+                        updatedBook.setDescription(newDescription);
+                        hasChanges = true;
+                        System.out.println("Description updated!");
+                    }
+                    break;
+                case 3:
+                    System.out.print("Enter new ISBN (current: " + updatedBook.getIsbn() + "): ");
+                    String newIsbn = scanner.nextLine();
+                    if (!newIsbn.trim().isEmpty()) {
+                        updatedBook.setIsbn(newIsbn);
+                        hasChanges = true;
+                        System.out.println("ISBN updated!");
+                    }
+                    break;
+                case 4:
+                    System.out.println("Current authors: " + getAuthorsString(updatedBook.getAuthors()));
+                    System.out.print("Do you want to replace all authors? (yes/no): ");
+                    String replaceAuthors = scanner.nextLine();
+                    if (replaceAuthors.equalsIgnoreCase("y") || replaceAuthors.equalsIgnoreCase("yes")) {
+                        List<Author> authors = new ArrayList<>();
+                        System.out.print("Enter number of authors: ");
+                        int authorCount = scanner.nextInt();
+                        scanner.nextLine();
+
+                        for (int i = 0; i < authorCount; i++) {
+                            System.out.print("Enter author " + (i + 1) + " name: ");
+                            String authorName = scanner.nextLine();
+                            authors.add(new Author(authorName));
+                        }
+                        updatedBook.setAuthors(authors);
+                        hasChanges = true;
+                        System.out.println("Authors updated!");
+                    } else {
+                        System.out.print("How many authors do you want to add?: ");
+                        int addAuthorCount = scanner.nextInt();
+                        scanner.nextLine();
+
+                        if (addAuthorCount > 0) {
+                            for (int i = 0; i < addAuthorCount; i++) {
+                                System.out.print("Enter new author " + (i + 1) + " name: ");
+                                String authorName = scanner.nextLine();
+                                updatedBook.addAuthor(new Author(authorName));
+                            }
+                            hasChanges = true;
+                            System.out.println("Authors added!");
+                        }
+                    }
+                    break;
+                case 5:
+                    System.out.println("Current genres: " + getGenresString(updatedBook.getGenres()));
+                    System.out.print("Do you want to replace all genres? (yes/no): ");
+                    String replaceGenres = scanner.nextLine();
+                    if (replaceGenres.equalsIgnoreCase("y") || replaceGenres.equalsIgnoreCase("yes")) {
+                        List<Genre> genres = new ArrayList<>();
+                        System.out.print("Enter number of genres: ");
+                        int genreCount = scanner.nextInt();
+                        scanner.nextLine();
+
+                        for (int i = 0; i < genreCount; i++) {
+                            System.out.print("Enter genre " + (i + 1) + " name: ");
+                            String genreName = scanner.nextLine();
+                            genres.add(new Genre(genreName));
+                        }
+                        updatedBook.setGenres(genres);
+                        hasChanges = true;
+                        System.out.println("Genres updated!");
+                    } else {
+                        System.out.print("How many genres do you want to add?: ");
+                        int addGenreCount = scanner.nextInt();
+                        scanner.nextLine();
+
+                        if (addGenreCount > 0) {
+                            for (int i = 0; i < addGenreCount; i++) {
+                                System.out.print("Enter new genre " + (i + 1) + " name: ");
+                                String genreName = scanner.nextLine();
+                                updatedBook.addGenre(new Genre(genreName));
+                            }
+                            hasChanges = true;
+                            System.out.println("Genres added!");
+                        }
+                    }
+                    break;
+                default:
+                    System.out.println("Invalid option");
+            }
         }
 
-        Book book = new Book(id, title, description, isbn, authors, genres);
-        bookController.updateBook(book);
+        System.out.println("\n=== Final book data ===");
+        System.out.println(updatedBook);
+        System.out.print("\nAre you sure you want to save these changes? (yes/no): ");
+        String confirmation = scanner.nextLine();
 
-        System.out.println("Book updated successfully!");
+        if (confirmation.equalsIgnoreCase("yes") || confirmation.equalsIgnoreCase("y")) {
+            bookController.updateBook(updatedBook);
+            System.out.println("Book updated successfully!");
+        } else {
+            System.out.println("Changes cancelled.");
+        }
     }
 
     private void deleteBook() {
@@ -170,7 +301,7 @@ public class BookView {
         Long id = scanner.nextLong();
         scanner.nextLine();
 
-        System.out.print("Are you sure you want to delete this book? (y/n): ");
+        System.out.print("Are you sure you want to delete this book? (yes/no): ");
         String confirmation = scanner.nextLine();
 
         if (confirmation.equalsIgnoreCase("y") || confirmation.equalsIgnoreCase("yes")) {
@@ -230,5 +361,31 @@ public class BookView {
                 System.out.println(book);
             }
         }
+    }
+
+    private String getAuthorsString(List<Author> authors) {
+        if (authors == null || authors.isEmpty()) {
+            return "No authors";
+        }
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < authors.size(); i++) {
+            if (i > 0)
+                sb.append(", ");
+            sb.append(authors.get(i).getName());
+        }
+        return sb.toString();
+    }
+
+    private String getGenresString(List<Genre> genres) {
+        if (genres == null || genres.isEmpty()) {
+            return "No genres";
+        }
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < genres.size(); i++) {
+            if (i > 0)
+                sb.append(", ");
+            sb.append(genres.get(i).getName());
+        }
+        return sb.toString();
     }
 }
