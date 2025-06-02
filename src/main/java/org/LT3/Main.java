@@ -19,10 +19,8 @@ public class Main {
 
             System.out.println("Welcome to the library!");
             bookView.showMenu();
-
             scanner.close();
-            System.out.println("Goodbye!");
-
+            
         } catch (Exception e) {
             System.err.println("Error while starting the application: " + e.getMessage());
         }
