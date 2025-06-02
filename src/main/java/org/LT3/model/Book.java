@@ -86,12 +86,29 @@ public class Book {
         this.genres.add(genre);
     }
     @Override
-    public String toString(){
-        return "Book{" + "id=" + id + ", title='" + title + '\'' + ", description='" + description + '\'' +
-                ", isbn='" + isbn + '\'' +
-                ", authors=" + authors + '\'' +
-                ", genres=" + genres +
-                '}';
+    public String toString() {
+        StringBuilder authorsStr = new StringBuilder();
+        if (authors != null && !authors.isEmpty()) {
+            for (int i = 0; i < authors.size(); i++) {
+                if (i > 0)
+                    authorsStr.append(", ");
+                authorsStr.append(authors.get(i).getName());
+            }
+        }
+        StringBuilder genresStr = new StringBuilder();
+        if (genres != null && !genres.isEmpty()) {
+            for (int i = 0; i < genres.size(); i++) {
+                if (i > 0)
+                    genresStr.append(", ");
+                genresStr.append(genres.get(i).getName());
+            }
+        }
+        return String.format("ID: %d |Title: %s | ISBN: %s | Authors: %s | Genres: %s",
+                id != null ? id : 0,
+                title != null ? title : "Without title",
+                isbn != null ? isbn : "isbn doesn't exist",
+                !authorsStr.isEmpty() ? authorsStr.toString() : "Author doesn't exist",
+                !genresStr.isEmpty() ? genresStr.toString() : "Genre doesn't exist");
     }
 
 }
