@@ -82,7 +82,50 @@ public class MySqlBookRepository implements BookRepository {
             e.printStackTrace();
         }
     }
-
+    @Override
+    public List<Book> findByTitle(String title) {
+        String sql = "SELECT id, title, description, isbn FROM book WHERE title LIKE ? ORDER BY id";
+        return findBy(sql, title);
+    }
+    @Override
+    public List<Book> findByAuthor(String author) {
+        String sql = "SELECT DISTINCT b.id, b.title, b.description, b.isbn FROM book b " +
+                "JOIN book_author ba ON b.id = ba.id_book " +
+                "JOIN author a ON ba.id_author = a.id WHERE a.name LIKE ? ORDER BY b.id";
+        return findBy(sql, author);
+    }
+    @Override
+    public List<Book> findByGenre(String genre) {
+        String sql = "SELECT DISTINCT b.id, b.title, b.description, b.isbn FROM book b " +
+                "JOIN book_genre bg ON b.id = bg.id_book " +
+                "JOIN genre g ON bg.id_genre = g.id WHERE g.name LIKE ? ORDER BY b.id";
+        return findBy(sql, genre);
+    }
+    private List<Book> findBy(String sql, String keyword) {
+        List<Book> books = new ArrayList<>();
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(
+                     sql.contains("LIKE") ? sql : "SELECT id, title, description, isbn FROM book WHERE " + sql)) {
+            stmt.setString(1, "%" + keyword + "%");
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Book book = new Book(
+                            rs.getLong("id"),
+                            rs.getString("title"),
+                            rs.getString("description"),
+                            rs.getString("isbn"),
+                            new ArrayList<>(),
+                            new ArrayList<>());
+                    loadAuthors(conn, book);
+                    loadGenres(conn, book);
+                    books.add(book);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return books;
+    }
     private void loadAuthors(Connection conn, Book book) throws SQLException {
         String sql = "SELECT a.id, a.name FROM author a JOIN book_author ba ON a.id = ba.id_author WHERE ba.id_book = ?";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
