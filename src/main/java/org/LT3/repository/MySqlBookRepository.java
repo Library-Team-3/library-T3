@@ -31,6 +31,28 @@ public class MySqlBookRepository implements BookRepository {
         }
         return books;
     }
+
+    @Override
+    public Book findById(Long id) {
+        String sql = "SELECT id, title, description, isbn FROM book WHERE id = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setLong(1, id);
+            try(ResultSet rs = stmt.executeQuery()){
+                if(rs.next()){
+                    Book book = new Book(rs.getLong("id"), rs.getString("title"), rs.getString("description"), rs.getString("isbn"), new ArrayList<>(), new ArrayList<>() );
+                    loadAuthors(conn, book);
+                    loadGenres(conn, book);
+
+                    return book;
+                }
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     @Override
     public void save(Book book) {
         String sql = "INSERT INTO book (title, description, isbn) VALUES (?, ?, ?)";
