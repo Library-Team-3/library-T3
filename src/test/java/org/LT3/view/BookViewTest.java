@@ -29,7 +29,6 @@ class BookViewTest {
     private PrintStream originalOut;
     private List<Book> testBooks;
     private Book testBook1;
-    private Book testBook2;
 
     @BeforeEach
     void setUp() {
@@ -46,7 +45,7 @@ class BookViewTest {
 
         testBook1 = new Book(1L, "Harry Potter", "A magical adventure", "978-0123456789",
                 List.of(author1), List.of(genre1));
-        testBook2 = new Book(2L, "1984", "Big Brother is watching", "978-0987654321",
+        Book testBook2 = new Book(2L, "1984", "Big Brother is watching", "978-0987654321",
                 List.of(author2), List.of(genre2));
 
         testBooks = Arrays.asList(testBook1, testBook2);
@@ -132,16 +131,18 @@ class BookViewTest {
 
     @Test
     void showMenu_shouldAddNewBookSuccessfully() {
-        String input = "2\n" +
-                "Test Title\n" +
-                "Test Description\n" +
-                "123-456-789\n" +
-                "1\n" +
-                "Test Author\n" +
-                "1\n" +
-                "Test Genre\n" +
-                "yes\n" +
-                "0\n";
+        String input = """
+                2
+                Test Title
+                Test Description
+                123-456-789
+                1
+                Test Author
+                1
+                Test Genre
+                yes
+                0
+                """;
         setupScanner(input);
 
         bookView.showMenu();
@@ -154,16 +155,18 @@ class BookViewTest {
 
     @Test
     void showMenu_shouldCancelBookCreationWhenUserSaysNo() {
-        String input = "2\n" +
-                "Test Title\n" +
-                "Test Description\n" +
-                "123-456-789\n" +
-                "1\n" +
-                "Test Author\n" +
-                "1\n" +
-                "Test Genre\n" +
-                "no\n" +
-                "0\n";
+        String input = """
+                2
+                Test Title
+                Test Description
+                123-456-789
+                1
+                Test Author
+                1
+                Test Genre
+                no
+                0
+                """;
         setupScanner(input);
 
         bookView.showMenu();
@@ -175,16 +178,18 @@ class BookViewTest {
 
     @Test
     void showMenu_shouldHandleSaveBookException() {
-        String input = "2\n" +
-                "Test Title\n" +
-                "Test Description\n" +
-                "123-456-789\n" +
-                "1\n" +
-                "Test Author\n" +
-                "1\n" +
-                "Test Genre\n" +
-                "yes\n" +
-                "0\n";
+        String input = """
+                2
+                Test Title
+                Test Description
+                123-456-789
+                1
+                Test Author
+                1
+                Test Genre
+                yes
+                0
+                """;
         setupScanner(input);
 
         doThrow(new RuntimeException("Database error")).when(mockBookController).saveBook(any(Book.class));
@@ -197,13 +202,15 @@ class BookViewTest {
 
     @Test
     void showMenu_shouldUpdateBookSuccessfully() {
-        String input = "3\n" +
-                "1\n" +
-                "1\n" +
-                "New Title\n" +
-                "0\n" +
-                "yes\n" +
-                "0\n";
+        String input = """
+                3
+                1
+                1
+                New Title
+                0
+                yes
+                0
+                """;
         setupScanner(input);
 
         when(mockBookController.getAllBooks()).thenReturn(testBooks);
@@ -220,9 +227,11 @@ class BookViewTest {
 
     @Test
     void showMenu_shouldHandleBookNotFoundForUpdate() {
-        String input = "3\n" +
-                "999\n" +
-                "0\n";
+        String input = """
+                3
+                999
+                0
+                """;
         setupScanner(input);
 
         when(mockBookController.getAllBooks()).thenReturn(testBooks);
@@ -238,10 +247,12 @@ class BookViewTest {
 
     @Test
     void showMenu_shouldDeleteBookSuccessfully() {
-        String input = "4\n" +
-                "1\n" +
-                "yes\n" +
-                "0\n";
+        String input = """
+                4
+                1
+                yes
+                0
+                """;
         setupScanner(input);
 
         when(mockBookController.getAllBooks()).thenReturn(testBooks);
@@ -258,10 +269,12 @@ class BookViewTest {
 
     @Test
     void showMenu_shouldCancelDeletionWhenUserSaysNo() {
-        String input = "4\n" +
-                "1\n" +
-                "no\n" +
-                "0\n";
+        String input = """
+                4
+                1
+                no
+                0
+                """;
         setupScanner(input);
 
         when(mockBookController.getAllBooks()).thenReturn(testBooks);
@@ -277,9 +290,11 @@ class BookViewTest {
 
     @Test
     void showMenu_shouldSearchByTitleSuccessfully() {
-        String input = "5\n" +
-                "Harry\n" +
-                "0\n";
+        String input = """
+                5
+                Harry
+                0
+                """;
         setupScanner(input);
 
         when(mockBookController.findByTitle("Harry")).thenReturn(List.of(testBook1));
@@ -294,9 +309,11 @@ class BookViewTest {
 
     @Test
     void showMenu_shouldShowNoResultsForTitleSearch() {
-        String input = "5\n" +
-                "NonExistent\n" +
-                "0\n";
+        String input = """
+                5
+                NonExistent
+                0
+                """;
         setupScanner(input);
 
         when(mockBookController.findByTitle("NonExistent")).thenReturn(Collections.emptyList());
@@ -310,9 +327,11 @@ class BookViewTest {
 
     @Test
     void showMenu_shouldSearchByAuthorSuccessfully() {
-        String input = "6\n" +
-                "Rowling\n" +
-                "0\n";
+        String input = """
+                6
+                Rowling
+                0
+                """;
         setupScanner(input);
 
         when(mockBookController.findByAuthor("Rowling")).thenReturn(List.of(testBook1));
@@ -327,9 +346,11 @@ class BookViewTest {
 
     @Test
     void showMenu_shouldSearchByGenreSuccessfully() {
-        String input = "7\n" +
-                "Fantasy\n" +
-                "0\n";
+        String input = """
+                7
+                Fantasy
+                0
+                """;
         setupScanner(input);
 
         when(mockBookController.findByGenre("Fantasy")).thenReturn(List.of(testBook1));
@@ -344,9 +365,11 @@ class BookViewTest {
 
     @Test
     void showMenu_shouldHandleSearchExceptions() {
-        String input = "5\n" +
-                "Test\n" +
-                "0\n";
+        String input = """
+                5
+                Test
+                0
+                """;
         setupScanner(input);
 
         when(mockBookController.findByTitle("Test")).thenThrow(new RuntimeException("Search error"));
@@ -359,18 +382,20 @@ class BookViewTest {
 
     @Test
     void showMenu_shouldHandleMultipleAuthorsAndGenres() {
-        String input = "2\n" +
-                "Multi Author Book\n" +
-                "A book with multiple authors\n" +
-                "123-456-789\n" +
-                "2\n" +
-                "Author One\n" +
-                "Author Two\n" +
-                "2\n" +
-                "Genre One\n" +
-                "Genre Two\n" +
-                "yes\n" +
-                "0\n";
+        String input = """
+                2
+                Multi Author Book
+                A book with multiple authors
+                123-456-789
+                2
+                Author One
+                Author Two
+                2
+                Genre One
+                Genre Two
+                yes
+                0
+                """;
         setupScanner(input);
 
         bookView.showMenu();
@@ -382,17 +407,19 @@ class BookViewTest {
 
     @Test
     void showMenu_shouldValidatePositiveIntegerInput() {
-        String input = "2\n" +
-                "Test Title\n" +
-                "Test Description\n" +
-                "123-456-789\n" +
-                "0\n" +
-                "1\n" +
-                "Test Author\n" +
-                "1\n" +
-                "Test Genre\n" +
-                "no\n" +
-                "0\n";
+        String input = """
+                2
+                Test Title
+                Test Description
+                123-456-789
+                0
+                1
+                Test Author
+                1
+                Test Genre
+                no
+                0
+                """;
         setupScanner(input);
 
         bookView.showMenu();
@@ -403,17 +430,19 @@ class BookViewTest {
 
     @Test
     void showMenu_shouldValidateNonEmptyStringInput() {
-        String input = "2\n" +
-                "\n" +
-                "Valid Title\n" +
-                "Valid Description\n" +
-                "123-456-789\n" +
-                "1\n" +
-                "Test Author\n" +
-                "1\n" +
-                "Test Genre\n" +
-                "no\n" +
-                "0\n"; 
+        String input = """
+                2
+                
+                Valid Title
+                Valid Description
+                123-456-789
+                1
+                Test Author
+                1
+                Test Genre
+                no
+                0
+                """;
         setupScanner(input);
 
         bookView.showMenu();
