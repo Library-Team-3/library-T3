@@ -1,7 +1,5 @@
+package org.LT3.model;
 
-import org.LT3.model.Author;
-import org.LT3.model.Book;
-import org.LT3.model.Genre;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.util.ArrayList;

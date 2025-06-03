@@ -1,11 +1,11 @@
-import org.LT3.controller.BookController;
+package org.LT3.controller;
+
 import org.LT3.model.Author;
 import org.LT3.model.Book;
 import org.LT3.model.Genre;
 import org.LT3.repository.BookRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import java.util.Arrays;
 import java.util.Collections;
