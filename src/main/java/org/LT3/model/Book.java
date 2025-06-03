@@ -86,7 +86,32 @@ public class Book {
         this.genres.add(genre);
     }
     @Override
-    public String toString() {
+    public String toStringDescription() {
+        StringBuilder authorsStr = new StringBuilder();
+        if (authors != null && !authors.isEmpty()) {
+            for (int i = 0; i < authors.size(); i++) {
+                if (i > 0)
+                    authorsStr.append(", ");
+                authorsStr.append(authors.get(i).getName());
+            }
+        }
+        StringBuilder genresStr = new StringBuilder();
+        if (genres != null && !genres.isEmpty()) {
+            for (int i = 0; i < genres.size(); i++) {
+                if (i > 0)
+                    genresStr.append(", ");
+                genresStr.append(genres.get(i).getName());
+            }
+        }
+        return String.format("ID: %d |Title: %s |Description: %s | ISBN: %s | Authors: %s | Genres: %s",
+                id != null ? id : 0,
+                title != null ? title : "Without title",
+                description != null ? description : "Without description",
+                isbn != null ? isbn : "ISBN doesn't exist",
+                !authorsStr.isEmpty() ? authorsStr.toString() : "Author doesn't exist",
+                !genresStr.isEmpty() ? genresStr.toString() : "Genre doesn't exist");
+    }
+    public String toStringWithoutDescription() {
         StringBuilder authorsStr = new StringBuilder();
         if (authors != null && !authors.isEmpty()) {
             for (int i = 0; i < authors.size(); i++) {
@@ -106,7 +131,7 @@ public class Book {
         return String.format("ID: %d |Title: %s | ISBN: %s | Authors: %s | Genres: %s",
                 id != null ? id : 0,
                 title != null ? title : "Without title",
-                isbn != null ? isbn : "isbn doesn't exist",
+                isbn != null ? isbn : "ISBN doesn't exist",
                 !authorsStr.isEmpty() ? authorsStr.toString() : "Author doesn't exist",
                 !genresStr.isEmpty() ? genresStr.toString() : "Genre doesn't exist");
     }
