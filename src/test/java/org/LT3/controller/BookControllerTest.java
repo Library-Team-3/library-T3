@@ -18,7 +18,6 @@ public class BookControllerTest {
     BookRepository bookRepository;
     BookController bookController;
     private Author author1;
-    private Author author2;
     private Genre genre1;
     private Genre genre2;
     private Book book1;
@@ -30,7 +29,7 @@ public class BookControllerTest {
         bookController = new BookController(bookRepository);
 
         author1 = new Author(1L, "J.K. Rowling");
-        author2 = new Author(2L, "Tolkien");
+        Author author2 = new Author(2L, "Tolkien");
 
         genre1 = new Genre(1L, "Fantasy");
         genre2 = new Genre(2L, "Adventure");

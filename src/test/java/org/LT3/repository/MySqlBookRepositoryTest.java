@@ -57,7 +57,7 @@ public class MySqlBookRepositoryTest {
     @Order(3)
     void testFindBookById() {
         List<Book> books = mySqlBookRepository.findAll();
-        Long expectedId = books.get(0).getId();
+        Long expectedId = books.getFirst().getId();
 
         Book book = mySqlBookRepository.findById(expectedId);
 
