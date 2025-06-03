@@ -1,7 +1,8 @@
+package org.LT3.repository;
+
 import org.LT3.model.Author;
 import org.LT3.model.Book;
 import org.LT3.model.Genre;
-import org.LT3.repository.MySqlBookRepository;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -56,7 +57,7 @@ public class MySqlBookRepositoryTest {
     @Order(3)
     void testFindBookById() {
         List<Book> books = mySqlBookRepository.findAll();
-        Long expectedId = books.get(0).getId();
+        Long expectedId = books.getFirst().getId();
 
         Book book = mySqlBookRepository.findById(expectedId);
 

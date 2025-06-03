@@ -1,5 +1,5 @@
+package org.LT3.model;
 
-import org.LT3.model.Genre;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

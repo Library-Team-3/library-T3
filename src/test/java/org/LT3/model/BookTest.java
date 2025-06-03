@@ -1,7 +1,5 @@
+package org.LT3.model;
 
-import org.LT3.model.Author;
-import org.LT3.model.Book;
-import org.LT3.model.Genre;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
@@ -18,8 +16,6 @@ public class BookTest {
     private Book book4;
 
     private Author author1;
-    private Author author2;
-    private Author author3;
     private Author author4;
 
     private Genre genre1;
@@ -30,8 +26,8 @@ public class BookTest {
     @BeforeEach
     void setUp() {
         author1 = new Author(1L, "J.K. Rowling");
-        author2 = new Author(2L, "J.R.R. Tolkien");
-        author3 = new Author(3L, "George Orwell");
+        Author author2 = new Author(2L, "J.R.R. Tolkien");
+        Author author3 = new Author(3L, "George Orwell");
         author4 = new Author(4L, "Mary Shelley");
 
         genre1 = new Genre(1L, "Fantasy");
@@ -83,8 +79,8 @@ public class BookTest {
         String expectedTitle = "The Hobbit";
         String expectedDescription = "Big Brother is watching you";
         String expectedISBN = "1121-1211";
-        ArrayList expectedAuthors = new ArrayList<>(List.of(author1));
-        ArrayList expectedGenres = new ArrayList<>(List.of(genre4, genre1));
+        ArrayList<Author> expectedAuthors = new ArrayList<>(List.of(author1));
+        ArrayList<Genre> expectedGenres = new ArrayList<>(List.of(genre4, genre1));
 
         assertEquals(expectedId,book1.getId());
         assertEquals(expectedTitle, book2.getTitle());
@@ -99,8 +95,8 @@ public class BookTest {
         String expectedTitle = "Harry Potter and the Philosopher's Stone";
         String expectedDescription = "An unexpected trip";
         String expectedISBN = "1019-9101";
-        ArrayList expectedAuthors = new ArrayList<>(List.of(author1));
-        ArrayList expectedGenres = new ArrayList<>(List.of(genre1, genre2));
+        ArrayList<Author> expectedAuthors = new ArrayList<>(List.of(author1));
+        ArrayList<Genre> expectedGenres = new ArrayList<>(List.of(genre1, genre2));
 
         book1.setTitle("Harry Potter and the Philosopher's Stone");
         book2.setDescription("An unexpected trip");
@@ -117,7 +113,7 @@ public class BookTest {
 
     @Test
     void testAddAuthor(){
-        ArrayList expectedAuthors = new ArrayList<>(List.of(author4, author1));
+        ArrayList<Author> expectedAuthors = new ArrayList<>(List.of(author4, author1));
 
         book4.addAuthor(author1);
 
@@ -126,7 +122,7 @@ public class BookTest {
 
     @Test
     void testAddGenre(){
-        ArrayList expectedGenres = new ArrayList<>(List.of(genre4, genre1, genre3));
+        ArrayList<Genre> expectedGenres = new ArrayList<>(List.of(genre4, genre1, genre3));
         book4.addGenre(genre3);
         assertEquals(expectedGenres, book4.getGenres());
     }
@@ -135,16 +131,12 @@ public class BookTest {
     void testToString(){
         String expectedToString = "ID: 1 | Title: Harry Potter | ISBN: 1234-4321 | Authors: J.K. Rowling | Genres: Fantasy";
 
-        book1.toString();
-
         assertEquals(expectedToString, book1.toString());
     }
 
     @Test
     void testToStringWithDescription(){
         String expectedToStringWithDescription = "ID: 1 | Title: Harry Potter | Description: Magic and spells | ISBN: 1234-4321 | Authors: J.K. Rowling | Genres: Fantasy";
-
-        book1.toString();
 
         assertEquals(expectedToStringWithDescription, book1.toStringWithDescription());
     }
