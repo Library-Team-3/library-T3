@@ -1,11 +1,11 @@
-import org.LT3.model.Author;
+
 import org.LT3.model.Genre;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class TestGenre {
+public class GenreTest {
     private Genre genre1;
     private Genre genre2;
     private Genre genre3;
