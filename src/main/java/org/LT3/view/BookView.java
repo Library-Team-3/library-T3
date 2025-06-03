@@ -108,14 +108,8 @@ public class BookView {
         String isbn = getValidStringInput("Enter ISBN: ", "ISBN cannot be empty!");
 
         List<Author> authors = new ArrayList<>();
-        int authorCount = getValidIntegerInput("Enter number of authors: ",
+        int authorCount = getValidPositiveIntegerInput("Enter number of authors: ",
                 "Number of authors must be a positive integer!");
-
-        if (authorCount <= 0) {
-            System.out.println(
-                    ColorConstants.ERROR_COLOR + "Error: Number of authors must be at least 1!" + ColorConstants.RESET);
-            return;
-        }
 
         for (int i = 0; i < authorCount; i++) {
             String authorName = getValidStringInput("Enter author " + (i + 1) + " name: ",
@@ -124,14 +118,8 @@ public class BookView {
         }
 
         List<Genre> genres = new ArrayList<>();
-        int genreCount = getValidIntegerInput("Enter number of genres: ",
+        int genreCount = getValidPositiveIntegerInput("Enter number of genres: ",
                 "Number of genres must be a positive integer!");
-
-        if (genreCount <= 0) {
-            System.out.println(
-                    ColorConstants.ERROR_COLOR + "Error: Number of genres must be at least 1!" + ColorConstants.RESET);
-            return;
-        }
 
         for (int i = 0; i < genreCount; i++) {
             String genreName = getValidStringInput("Enter genre " + (i + 1) + " name: ", "Genre name cannot be empty!");
@@ -248,7 +236,7 @@ public class BookView {
                         hasChanges = true;
                         System.out.println(ColorConstants.SUCCESS_COLOR + "Title updated!" + ColorConstants.RESET);
                     } else {
-                        System.out.println(ColorConstants.OPTION_COLOR + "Title cannot be empty. Update cancelled."
+                        System.out.println(ColorConstants.ERROR_COLOR + "Title cannot be empty. Update cancelled."
                                 + ColorConstants.RESET);
                     }
                     break;
@@ -264,7 +252,7 @@ public class BookView {
                         System.out
                                 .println(ColorConstants.SUCCESS_COLOR + "Description updated!" + ColorConstants.RESET);
                     } else {
-                        System.out.println(ColorConstants.OPTION_COLOR
+                        System.out.println(ColorConstants.ERROR_COLOR
                                 + "Description cannot be empty. Update cancelled." + ColorConstants.RESET);
                     }
                     break;
@@ -277,7 +265,7 @@ public class BookView {
                         hasChanges = true;
                         System.out.println(ColorConstants.SUCCESS_COLOR + "ISBN updated!" + ColorConstants.RESET);
                     } else {
-                        System.out.println(ColorConstants.OPTION_COLOR + "ISBN cannot be empty. Update cancelled."
+                        System.out.println(ColorConstants.ERROR_COLOR + "ISBN cannot be empty. Update cancelled."
                                 + ColorConstants.RESET);
                     }
                     break;
@@ -289,14 +277,8 @@ public class BookView {
                     String replaceAuthors = scanner.nextLine();
                     if (replaceAuthors.equalsIgnoreCase("y") || replaceAuthors.equalsIgnoreCase("yes")) {
                         List<Author> authors = new ArrayList<>();
-                        int authorCount = getValidIntegerInput("Enter number of authors: ",
+                        int authorCount = getValidPositiveIntegerInput("Enter number of authors: ",
                                 "Number of authors must be a positive integer!");
-
-                        if (authorCount <= 0) {
-                            System.out.println(ColorConstants.ERROR_COLOR
-                                    + "Error: Number of authors must be at least 1!" + ColorConstants.RESET);
-                            break;
-                        }
 
                         for (int i = 0; i < authorCount; i++) {
                             String authorName = getValidStringInput("Enter author " + (i + 1) + " name: ",
@@ -307,7 +289,7 @@ public class BookView {
                         hasChanges = true;
                         System.out.println(ColorConstants.SUCCESS_COLOR + "Authors updated!" + ColorConstants.RESET);
                     } else {
-                        int addAuthorCount = getValidIntegerInput("How many authors do you want to add?: ",
+                        int addAuthorCount = getValidPositiveIntegerInput("How many authors do you want to add?: ",
                                 "Number must be a positive integer!");
 
                         if (addAuthorCount > 0) {
@@ -330,14 +312,8 @@ public class BookView {
                     String replaceGenres = scanner.nextLine();
                     if (replaceGenres.equalsIgnoreCase("y") || replaceGenres.equalsIgnoreCase("yes")) {
                         List<Genre> genres = new ArrayList<>();
-                        int genreCount = getValidIntegerInput("Enter number of genres: ",
+                        int genreCount = getValidPositiveIntegerInput("Enter number of genres: ",
                                 "Number of genres must be a positive integer!");
-
-                        if (genreCount <= 0) {
-                            System.out.println(ColorConstants.ERROR_COLOR
-                                    + "Error: Number of genres must be at least 1!" + ColorConstants.RESET);
-                            break;
-                        }
 
                         for (int i = 0; i < genreCount; i++) {
                             String genreName = getValidStringInput("Enter genre " + (i + 1) + " name: ",
@@ -348,7 +324,7 @@ public class BookView {
                         hasChanges = true;
                         System.out.println(ColorConstants.SUCCESS_COLOR + "Genres updated!" + ColorConstants.RESET);
                     } else {
-                        int addGenreCount = getValidIntegerInput("How many genres do you want to add?: ",
+                        int addGenreCount = getValidPositiveIntegerInput("How many genres do you want to add?: ",
                                 "Number must be a positive integer!");
 
                         if (addGenreCount > 0) {
@@ -520,13 +496,18 @@ public class BookView {
         }
     }
 
-    private int getValidIntegerInput(String prompt, String errorMessage) {
+    private int getValidPositiveIntegerInput(String prompt, String errorMessage) {
         while (true) {
             System.out.print(ColorConstants.MENU_COLOR + prompt + ColorConstants.RESET);
             try {
                 int value = scanner.nextInt();
                 scanner.nextLine();
-                return value;
+                if (value > 0) {
+                    return value;
+                } else {
+                    System.out.println(
+                            ColorConstants.ERROR_COLOR + "Error: Number must be at least 1!" + ColorConstants.RESET);
+                }
             } catch (InputMismatchException e) {
                 System.out.println(ColorConstants.ERROR_COLOR + "Error: " + errorMessage + ColorConstants.RESET);
                 scanner.nextLine();
@@ -542,7 +523,8 @@ public class BookView {
                 scanner.nextLine();
                 return value;
             } catch (InputMismatchException e) {
-                System.out.println(ColorConstants.ERROR_COLOR + "Error: " + "Please enter a valid book ID!" + ColorConstants.RESET);
+                System.out.println(ColorConstants.ERROR_COLOR + "Error: " + "Please enter a valid book ID!"
+                        + ColorConstants.RESET);
                 scanner.nextLine();
             }
         }
