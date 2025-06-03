@@ -86,7 +86,7 @@ public class Book {
         this.genres.add(genre);
     }
     @Override
-    public String toStringDescription() {
+    public String toStringWithDescription() {
         StringBuilder authorsStr = new StringBuilder();
         if (authors != null && !authors.isEmpty()) {
             for (int i = 0; i < authors.size(); i++) {
@@ -111,7 +111,7 @@ public class Book {
                 !authorsStr.isEmpty() ? authorsStr.toString() : "Author doesn't exist",
                 !genresStr.isEmpty() ? genresStr.toString() : "Genre doesn't exist");
     }
-    public String toStringWithoutDescription() {
+    public String toString() {
         StringBuilder authorsStr = new StringBuilder();
         if (authors != null && !authors.isEmpty()) {
             for (int i = 0; i < authors.size(); i++) {
