@@ -11,7 +11,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 public class BookControllerTest {
@@ -38,9 +38,8 @@ public class BookControllerTest {
         book2 = new Book(2L, "Hobbit", "An unexpected trip", "5678", List.of(author2), List.of(genre1, genre2));
     }
 
-        @Test
+    @Test
     void getAllBooks_shouldReturnBookListWithAuthorsAndGenres() {
-
         List<Book> mockBooks = Arrays.asList(book1, book2);
 
         when(bookRepository.findAll()).thenReturn(mockBooks);
