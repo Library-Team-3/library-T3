@@ -10,11 +10,12 @@ public class BookController {
     public List<Book> getAllBooks() {
         return bookRepository.findAll();
     }
-
     public Book findByID(Long id) {
         return bookRepository.findById(id);
     }
-
+    public Book findByIsbn(String isbn) {
+        return bookRepository.findByIsbn(isbn);
+    }
     public void saveBook(Book book) {
         bookRepository.save(book);
     }
