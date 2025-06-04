@@ -107,6 +107,31 @@ public class BookView {
         String description = getValidStringInput("Enter description: ", "Book description cannot be empty!");
         String isbn = getValidStringInput("Enter ISBN: ", "ISBN cannot be empty!");
 
+        try {
+            Book existingBook = bookController.findByIsbn(isbn);
+            if (existingBook != null) {
+                System.out.println(ColorConstants.ERROR_COLOR +
+                        "\nError: A book with ISBN '" + isbn + "' already exists in the database!"
+                        + ColorConstants.RESET);
+                System.out.println(ColorConstants.OPTION_COLOR + "Existing book:" + ColorConstants.RESET);
+                System.out.println(existingBook);
+                System.out.print(ColorConstants.OPTION_COLOR +
+                        "\nDo you want to add another book? (yes/no): "
+                        + ColorConstants.RESET);
+                String continueChoice = scanner.nextLine();
+                if (continueChoice.equalsIgnoreCase("yes") || continueChoice.equalsIgnoreCase("y")) {
+                    addNewBook();
+                    return;
+                } else {
+                    System.out.println(ColorConstants.OPTION_COLOR + "Book creation cancelled." + ColorConstants.RESET);
+                    return;
+                }
+            }
+        } catch (Exception e) {
+            System.out.println(ColorConstants.ERROR_COLOR + "Error: Failed to check for existing book. " +
+                    e.getMessage() + ColorConstants.RESET);
+        }
+
         List<Author> authors = new ArrayList<>();
         int authorCount = getValidPositiveIntegerInput("Enter number of authors: ",
                 "Number of authors must be a positive integer!");
