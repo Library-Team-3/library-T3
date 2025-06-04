@@ -82,6 +82,17 @@ public class MySqlBookRepositoryTest {
     }
 
     @Test
+    void testFindBookByIsbn() {
+        List<Book> books = mySqlBookRepository.findAll();
+        String expectedIsbn = books.getFirst().getIsbn();
+
+        Book book = mySqlBookRepository.findByIsbn(expectedIsbn);
+
+        assertNotNull(book);
+        assertEquals(expectedIsbn, book.getIsbn());
+    }
+
+    @Test
     void testDeleteBook() {
         Book book = new Book(
                 "Delete Me",
