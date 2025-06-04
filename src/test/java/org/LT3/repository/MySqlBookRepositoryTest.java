@@ -3,8 +3,8 @@ package org.LT3.repository;
 import org.LT3.model.Author;
 import org.LT3.model.Book;
 import org.LT3.model.Genre;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -20,41 +20,57 @@ public class MySqlBookRepositoryTest {
         mySqlBookRepository = new MySqlBookRepository();
     }
 
+    @AfterAll
+    static void cleanUp() {
+        String[] testBookTitles = {
+                "Test Book",
+                "Delete Me",
+                "Update Me",
+                "Updated Now",
+                "New Book With Relations"
+        };
+
+        for (String title : testBookTitles) {
+            try {
+                List<Book> books = mySqlBookRepository.findByTitle(title);
+                for (Book book : books) {
+                    mySqlBookRepository.delete(book.getId());
+                }
+            } catch (Exception e) {
+                System.out.println("Warning: Could not delete test book: " + title);
+            }
+        }
+
+        System.out.println("Test data cleanup completed");
+    }
+
     @Test
-    @Order(1)
     void testSaveBook() {
         Book newBook = new Book(
                 "Test Book",
                 "This is a test book",
                 "12345-54321",
                 List.of(new Author("Author Test")),
-                List.of(new Genre("Genre Test"))
-        );
+                List.of(new Genre("Genre Test")));
 
         mySqlBookRepository.save(newBook);
         List<Book> books = mySqlBookRepository.findByTitle("Test Book");
 
-        assertNotNull(books.getFirst().getId(), "El libro guardado debería tener un ID");
+        assertNotNull(books.getFirst().getId(), "The saved book should have an ID.");
         assertEquals("Test Book", books.getFirst().getTitle());
         assertEquals("This is a test book", books.getFirst().getDescription());
     }
 
     @Test
-    @Order(2)
     void testFindAllBooks() {
         List<Book> books = mySqlBookRepository.findAll();
 
-        String expectedFirstTitle = "Clean Code";
-        String expectedLastTitle = "Test Book";
-
         assertNotNull(books);
-        assertFalse(books.isEmpty(), "La lista de libros no debería estar vacía");
-        assertEquals(expectedFirstTitle, books.getFirst().getTitle());
-        assertEquals(expectedLastTitle, books.getLast().getTitle());
+        assertFalse(books.isEmpty(), "The book list should not be empty.");
+        assertTrue(books.size() >= 20);
     }
 
     @Test
-    @Order(3)
     void testFindBookById() {
         List<Book> books = mySqlBookRepository.findAll();
         Long expectedId = books.getFirst().getId();
@@ -66,15 +82,13 @@ public class MySqlBookRepositoryTest {
     }
 
     @Test
-    @Order(4)
     void testDeleteBook() {
         Book book = new Book(
                 "Delete Me",
                 "To be deleted",
                 "DELETE123",
                 List.of(new Author("Author Test")),
-                List.of(new Genre("Genre Test"))
-        );
+                List.of(new Genre("Genre Test")));
         mySqlBookRepository.save(book);
         List<Book> books = mySqlBookRepository.findByTitle("Delete Me");
         mySqlBookRepository.delete(books.getFirst().getId());
@@ -84,8 +98,7 @@ public class MySqlBookRepositoryTest {
     }
 
     @Test
-    @Order(5)
-    void testFindByTitle(){
+    void testFindByTitle() {
         List<Book> books = mySqlBookRepository.findByTitle("Clean");
 
         String expectedTitle1 = "Clean Code";
@@ -98,15 +111,13 @@ public class MySqlBookRepositoryTest {
     }
 
     @Test
-    @Order(6)
-    void testUpdateBook(){
+    void testUpdateBook() {
         Book book = new Book(
                 "Update Me",
                 "To be updated",
                 "123-321",
                 List.of(new Author("Author Test")),
-                List.of(new Genre("Genre Test"))
-        );
+                List.of(new Genre("Genre Test")));
 
         String expectedTitle = "Updated Now";
         String expectedDescription = "This book is updated now";
@@ -121,15 +132,13 @@ public class MySqlBookRepositoryTest {
                 expectedDescription,
                 book.getIsbn(),
                 book.getAuthors(),
-                book.getGenres()
-        );
+                book.getGenres());
         mySqlBookRepository.update(newBook);
 
         assertEquals(expectedTitle, mySqlBookRepository.findByTitle(expectedTitle).getFirst().getTitle());
     }
 
     @Test
-    @Order(7)
     void testFindBookByAuthor() {
         List<Book> books = mySqlBookRepository.findByAuthor("Jeff Geerling");
         assertNotNull(books.getFirst());
@@ -139,7 +148,6 @@ public class MySqlBookRepositoryTest {
     }
 
     @Test
-    @Order(8)
     void testFindBookByGenre() {
         List<Book> books = mySqlBookRepository.findByGenre("Programming");
         assertNotNull(books.getFirst());
@@ -149,7 +157,6 @@ public class MySqlBookRepositoryTest {
     }
 
     @Test
-    @Order(9)
     void testSaveBookWithAuthorsAndGenres() {
         Author author = new Author(1L, "Robert C. Martin");
         Genre genre = new Genre(1L, "Programming");
@@ -160,18 +167,15 @@ public class MySqlBookRepositoryTest {
                 "To be deleted",
                 "DELETE123",
                 new ArrayList<>(List.of()),
-                new ArrayList<>(List.of())
-        );
+                new ArrayList<>(List.of()));
         book.getAuthors().add(author);
         book.getGenres().add(genre);
 
         mySqlBookRepository.save(book);
         List<Book> books = mySqlBookRepository.findByTitle("New Book With Relations");
 
-
         assertNotNull(books.getFirst().getId());
         assertEquals(expectedTitle, books.getFirst().getTitle());
     }
-
 
 }

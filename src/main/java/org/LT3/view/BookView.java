@@ -499,18 +499,24 @@ public class BookView {
     private int getValidPositiveIntegerInput(String prompt, String errorMessage) {
         while (true) {
             System.out.print(ColorConstants.MENU_COLOR + prompt + ColorConstants.RESET);
+            String input = scanner.nextLine().trim();
+
+            if (input.isEmpty()) {
+                System.out.println(
+                        ColorConstants.ERROR_COLOR + "Error: You must enter a quantity!" + ColorConstants.RESET);
+                continue;
+            }
+
             try {
-                int value = scanner.nextInt();
-                scanner.nextLine();
+                int value = Integer.parseInt(input);
                 if (value > 0) {
                     return value;
                 } else {
                     System.out.println(
                             ColorConstants.ERROR_COLOR + "Error: Number must be at least 1!" + ColorConstants.RESET);
                 }
-            } catch (InputMismatchException e) {
+            } catch (NumberFormatException e) {
                 System.out.println(ColorConstants.ERROR_COLOR + "Error: " + errorMessage + ColorConstants.RESET);
-                scanner.nextLine();
             }
         }
     }
