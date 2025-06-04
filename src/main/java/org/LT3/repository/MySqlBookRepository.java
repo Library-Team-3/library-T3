@@ -123,6 +123,33 @@ public class MySqlBookRepository implements BookRepository {
                 "JOIN genre g ON bg.id_genre = g.id WHERE g.name LIKE ? ORDER BY b.id";
         return findBy(sql, genre);
     }
+
+    @Override
+    public Book findByIsbn(String isbn) {
+        String sql = "SELECT id, title, description, isbn FROM book WHERE isbn = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, isbn);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    Book book = new Book(
+                            rs.getLong("id"),
+                            rs.getString("title"),
+                            rs.getString("description"),
+                            rs.getString("isbn"),
+                            new ArrayList<>(),
+                            new ArrayList<>());
+                    loadAuthors(conn, book);
+                    loadGenres(conn, book);
+                    return book;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     private List<Book> findBy(String sql, String keyword) {
         List<Book> books = new ArrayList<>();
         try (Connection conn = DatabaseConnection.getConnection();
@@ -219,4 +246,6 @@ public class MySqlBookRepository implements BookRepository {
             stmt.executeUpdate();
         }
     }
+
+
 }
