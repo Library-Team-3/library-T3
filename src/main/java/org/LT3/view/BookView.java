@@ -121,11 +121,10 @@ public class BookView {
                 String continueChoice = scanner.nextLine();
                 if (continueChoice.equalsIgnoreCase("yes") || continueChoice.equalsIgnoreCase("y")) {
                     addNewBook();
-                    return;
                 } else {
                     System.out.println(ColorConstants.OPTION_COLOR + "Book creation cancelled." + ColorConstants.RESET);
-                    return;
                 }
+                return;
             }
         } catch (Exception e) {
             System.out.println(ColorConstants.ERROR_COLOR + "Error: Failed to check for existing book. " +
@@ -205,7 +204,7 @@ public class BookView {
 
         System.out.println(ColorConstants.BOLD + ColorConstants.MENU_COLOR + "\nOriginal book information:"
                 + ColorConstants.RESET);
-        System.out.println(existingBook);
+        System.out.println(existingBook.toStringWithDescription());
 
         Book updatedBook = new Book(
                 existingBook.getId(),
@@ -221,7 +220,7 @@ public class BookView {
             if (hasChanges) {
                 System.out.println(ColorConstants.BOLD + ColorConstants.MENU_COLOR
                         + "\n=== Current book information ===" + ColorConstants.RESET);
-                System.out.println(updatedBook);
+                System.out.println(updatedBook.toStringWithDescription());
             }
 
             System.out.println(ColorConstants.BOLD + ColorConstants.MENU_COLOR
@@ -282,16 +281,48 @@ public class BookView {
                     }
                     break;
                 case 3:
-                    System.out.print(ColorConstants.MENU_COLOR + "Enter new ISBN (current: " + updatedBook.getIsbn()
-                            + "): " + ColorConstants.RESET);
-                    String newIsbn = scanner.nextLine();
-                    if (!newIsbn.trim().isEmpty()) {
-                        updatedBook.setIsbn(newIsbn);
-                        hasChanges = true;
-                        System.out.println(ColorConstants.SUCCESS_COLOR + "ISBN updated!" + ColorConstants.RESET);
-                    } else {
-                        System.out.println(ColorConstants.ERROR_COLOR + "ISBN cannot be empty. Update cancelled."
-                                + ColorConstants.RESET);
+                    while (true) {
+                        System.out.print(ColorConstants.MENU_COLOR + "Enter new ISBN (current: " + updatedBook.getIsbn()
+                                + "): " + ColorConstants.RESET);
+                        String newIsbn = scanner.nextLine();
+                        if (!newIsbn.trim().isEmpty()) {
+                            try {
+                                Book isbnExistingBook = bookController.findByIsbn(newIsbn);
+                                if (isbnExistingBook != null && !isbnExistingBook.getId().equals(updatedBook.getId())) {
+                                    System.out.println(ColorConstants.ERROR_COLOR +
+                                            "\nError: A book with ISBN '" + newIsbn
+                                            + "' already exists in the database!"
+                                            + ColorConstants.RESET);
+                                    System.out.println(
+                                            ColorConstants.OPTION_COLOR + "Existing book:" + ColorConstants.RESET);
+                                    System.out.println(isbnExistingBook);
+                                    System.out.print(ColorConstants.OPTION_COLOR +
+                                            "\nDo you want to enter another ISBN? (yes/no): " + ColorConstants.RESET);
+                                    String continueChoice = scanner.nextLine();
+                                    if (!continueChoice.equalsIgnoreCase("yes")
+                                            && !continueChoice.equalsIgnoreCase("y")) {
+                                        System.out.println(ColorConstants.OPTION_COLOR + "ISBN update cancelled."
+                                                + ColorConstants.RESET);
+                                        break;
+                                    }
+                                } else {
+                                    updatedBook.setIsbn(newIsbn);
+                                    hasChanges = true;
+                                    System.out.println(
+                                            ColorConstants.SUCCESS_COLOR + "ISBN updated!" + ColorConstants.RESET);
+                                    break;
+                                }
+                            } catch (Exception e) {
+                                System.out.println(
+                                        ColorConstants.ERROR_COLOR + "Error: Failed to check for existing book. " +
+                                                e.getMessage() + ColorConstants.RESET);
+                                break;
+                            }
+                        } else {
+                            System.out.println(ColorConstants.ERROR_COLOR + "ISBN cannot be empty. Update cancelled."
+                                    + ColorConstants.RESET);
+                            break;
+                        }
                     }
                     break;
                 case 4:
@@ -376,7 +407,7 @@ public class BookView {
 
         System.out.println(
                 ColorConstants.BOLD + ColorConstants.MENU_COLOR + "\n=== Final book data ===" + ColorConstants.RESET);
-        System.out.println(updatedBook);
+        System.out.println(updatedBook.toStringWithDescription());
         System.out.print(ColorConstants.OPTION_COLOR + "\nAre you sure you want to save these changes? (yes/no): "
                 + ColorConstants.RESET);
         String confirmation = scanner.nextLine();
@@ -418,7 +449,7 @@ public class BookView {
         }
 
         System.out.println(ColorConstants.OPTION_COLOR + "\nBook to be deleted:" + ColorConstants.RESET);
-        System.out.println(bookToDelete);
+        System.out.println(bookToDelete.toStringWithDescription());
 
         System.out.print(ColorConstants.ERROR_COLOR + "\nAre you sure you want to delete this book? (yes/no): "
                 + ColorConstants.RESET);
