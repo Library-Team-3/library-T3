@@ -61,6 +61,15 @@ public class BookControllerTest {
     }
 
     @Test
+    void findByIsbn_shouldReturnCorrectBook() {
+        when(bookRepository.findByIsbn("1234")).thenReturn(book1);
+
+        Book result = bookController.findByIsbn("1234");
+        assertEquals("Harry Potter", result.getTitle());
+        assertEquals("1234", result.getIsbn());
+    }
+
+    @Test
     void saveBook_shouldCallRepositorySave() {
         bookController.saveBook(book1);
 
