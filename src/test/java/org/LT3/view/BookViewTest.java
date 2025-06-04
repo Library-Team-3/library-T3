@@ -432,7 +432,7 @@ class BookViewTest {
     void showMenu_shouldValidateNonEmptyStringInput() {
         String input = """
                 2
-                
+
                 Valid Title
                 Valid Description
                 123-456-789
@@ -449,5 +449,121 @@ class BookViewTest {
 
         String output = outputStream.toString();
         assertTrue(output.contains("Error: Book title cannot be empty!"));
+    }
+
+    @Test
+    void showMenu_shouldHandleDuplicateIsbnWhenAddingBook() {
+        String input = """
+                2
+                Test Title
+                Test Description
+                978-0123456789
+                no
+                0
+                """;
+        setupScanner(input);
+
+        when(mockBookController.findByIsbn("978-0123456789")).thenReturn(testBook1);
+
+        bookView.showMenu();
+
+        verify(mockBookController).findByIsbn("978-0123456789");
+        verify(mockBookController, never()).saveBook(any(Book.class));
+        String output = outputStream.toString();
+        assertTrue(output.contains("Error: A book with ISBN '978-0123456789' already exists in the database!"));
+        assertTrue(output.contains("Do you want to add another book? (yes/no):"));
+        assertTrue(output.contains("Book creation cancelled"));
+    }
+
+    @Test
+    void showMenu_shouldRestartBookCreationWhenDuplicateIsbnAndUserSaysYes() {
+        String input = """
+                2
+                First Title
+                First Description
+                978-0123456789
+                yes
+                Second Title
+                Second Description
+                978-0987654321
+                1
+                Test Author
+                1
+                Test Genre
+                yes
+                0
+                """;
+        setupScanner(input);
+
+        when(mockBookController.findByIsbn("978-0123456789")).thenReturn(testBook1);
+        when(mockBookController.findByIsbn("978-0987654321")).thenReturn(null);
+
+        bookView.showMenu();
+
+        verify(mockBookController).findByIsbn("978-0123456789");
+        verify(mockBookController).findByIsbn("978-0987654321");
+        verify(mockBookController).saveBook(any(Book.class));
+        String output = outputStream.toString();
+        assertTrue(output.contains("Error: A book with ISBN '978-0123456789' already exists in the database!"));
+        assertTrue(output.contains("Book added successfully! ✅"));
+    }
+
+    @Test
+    void showMenu_shouldHandleDuplicateIsbnWhenUpdatingBook() {
+        String input = """
+                3
+                2
+                3
+                978-0123456789
+                no
+                0
+                no
+                0
+                """;
+        setupScanner(input);
+
+        when(mockBookController.getAllBooks()).thenReturn(testBooks);
+        when(mockBookController.findByID(2L)).thenReturn(testBooks.get(1));
+        when(mockBookController.findByIsbn("978-0123456789")).thenReturn(testBook1); 
+
+        bookView.showMenu();
+
+        verify(mockBookController).findByIsbn("978-0123456789");
+        verify(mockBookController, never()).updateBook(any(Book.class));
+        String output = outputStream.toString();
+        assertTrue(output.contains("Error: A book with ISBN '978-0123456789' already exists in the database!"));
+        assertTrue(output.contains("Do you want to enter another ISBN? (yes/no):"));
+        assertTrue(output.contains("ISBN update cancelled"));
+    }
+
+    @Test
+    void showMenu_shouldAllowRetryIsbnWhenUpdatingBook() {
+        String input = """
+                3
+                2
+                3
+                978-0123456789
+                yes
+                978-1111111111
+                0
+                yes
+                0
+                """;
+        setupScanner(input);
+
+        when(mockBookController.getAllBooks()).thenReturn(testBooks);
+        when(mockBookController.findByID(2L)).thenReturn(testBooks.get(1));
+        when(mockBookController.findByIsbn("978-0123456789")).thenReturn(testBook1);
+        when(mockBookController.findByIsbn("978-1111111111")).thenReturn(null);
+
+        bookView.showMenu();
+
+        verify(mockBookController).findByIsbn("978-0123456789");
+        verify(mockBookController).findByIsbn("978-1111111111");
+        verify(mockBookController).updateBook(any(Book.class));
+        String output = outputStream.toString();
+        assertTrue(output.contains("Error: A book with ISBN '978-0123456789' already exists in the database!"));
+        assertTrue(output.contains("ISBN updated!"));
+        assertTrue(output.contains("Book updated successfully! ✅"));
     }
 }
