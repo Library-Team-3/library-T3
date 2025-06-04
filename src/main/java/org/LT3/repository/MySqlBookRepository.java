@@ -7,8 +7,12 @@ import org.LT3.model.Genre;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 public class MySqlBookRepository implements BookRepository {
+    private static final Logger logger = Logger.getLogger(MySqlBookRepository.class.getName());
+
     @Override
     public List<Book> findAll() {
         List<Book> books = new ArrayList<>();
@@ -29,7 +33,7 @@ public class MySqlBookRepository implements BookRepository {
                 books.add(book);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "Error finding all books", e);
         }
         return books;
     }
@@ -51,7 +55,7 @@ public class MySqlBookRepository implements BookRepository {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "Error finding book by id: " + id, e);
         }
         return null;
     }
@@ -75,7 +79,7 @@ public class MySqlBookRepository implements BookRepository {
         } catch (java.sql.SQLIntegrityConstraintViolationException e) {
             throw new RuntimeException("ISBN already exists: " + e.getMessage(), e);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "Failed to save book: " + book.getTitle(), e);
             throw new RuntimeException("Failed to save book: " + e.getMessage(), e);
         }
     }
@@ -97,7 +101,7 @@ public class MySqlBookRepository implements BookRepository {
         } catch (java.sql.SQLIntegrityConstraintViolationException e) {
             throw new RuntimeException("ISBN already exists: " + e.getMessage(), e);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "Failed to update book: " + book.getTitle(), e);
             throw new RuntimeException("Failed to update book: " + e.getMessage(), e);
         }
     }
@@ -112,7 +116,7 @@ public class MySqlBookRepository implements BookRepository {
                 stmt.executeUpdate();
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "Failed to delete book with id: " + id, e);
         }
     }
 
@@ -159,7 +163,7 @@ public class MySqlBookRepository implements BookRepository {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "Error finding book by ISBN: " + isbn, e);
         }
         return null;
     }
@@ -185,7 +189,7 @@ public class MySqlBookRepository implements BookRepository {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "Error finding books by keyword: " + keyword, e);
         }
         return books;
     }
