@@ -33,7 +33,7 @@ public class BookView {
             System.out.println("3. Update book             ✏️");
             System.out.println("4. Delete book             🗑️");
             System.out.println("5. Search by title         🔍");
-            System.out.println("6. Search by author        👤");
+            System.out.println("6. Search by author        🙎🏼‍♂️");
             System.out.println("7. Search by genre         🏷️");
             System.out.println();
             System.out.println(ColorConstants.ERROR_COLOR + "0. Exit                    🚪" + ColorConstants.RESET);
