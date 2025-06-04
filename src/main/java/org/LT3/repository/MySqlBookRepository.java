@@ -1,4 +1,5 @@
 package org.LT3.repository;
+
 import org.LT3.config.DatabaseConnection;
 import org.LT3.model.Author;
 import org.LT3.model.Book;
@@ -6,14 +7,15 @@ import org.LT3.model.Genre;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+
 public class MySqlBookRepository implements BookRepository {
     @Override
     public List<Book> findAll() {
         List<Book> books = new ArrayList<>();
         String sql = "SELECT id, title, description, isbn FROM book ORDER BY id";
         try (Connection conn = DatabaseConnection.getConnection();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
+                Statement stmt = conn.createStatement();
+                ResultSet rs = stmt.executeQuery(sql)) {
             while (rs.next()) {
                 Book book = new Book(
                         rs.getLong("id"),
@@ -36,18 +38,19 @@ public class MySqlBookRepository implements BookRepository {
     public Book findById(Long id) {
         String sql = "SELECT id, title, description, isbn FROM book WHERE id = ?";
         try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setLong(1, id);
-            try(ResultSet rs = stmt.executeQuery()){
-                if(rs.next()){
-                    Book book = new Book(rs.getLong("id"), rs.getString("title"), rs.getString("description"), rs.getString("isbn"), new ArrayList<>(), new ArrayList<>() );
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    Book book = new Book(rs.getLong("id"), rs.getString("title"), rs.getString("description"),
+                            rs.getString("isbn"), new ArrayList<>(), new ArrayList<>());
                     loadAuthors(conn, book);
                     loadGenres(conn, book);
 
                     return book;
                 }
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
@@ -57,7 +60,7 @@ public class MySqlBookRepository implements BookRepository {
     public void save(Book book) {
         String sql = "INSERT INTO book (title, description, isbn) VALUES (?, ?, ?)";
         try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+                PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setString(1, book.getTitle());
             stmt.setString(2, book.getDescription());
             stmt.setString(3, book.getIsbn());
@@ -69,15 +72,19 @@ public class MySqlBookRepository implements BookRepository {
                     saveGenres(conn, bookId, book.getGenres());
                 }
             }
+        } catch (java.sql.SQLIntegrityConstraintViolationException e) {
+            throw new RuntimeException("ISBN already exists: " + e.getMessage(), e);
         } catch (Exception e) {
             e.printStackTrace();
+            throw new RuntimeException("Failed to save book: " + e.getMessage(), e);
         }
     }
+
     @Override
     public void update(Book book) {
         String sql = "UPDATE book SET title = ?, description = ?, isbn = ? WHERE id = ?";
         try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, book.getTitle());
             stmt.setString(2, book.getDescription());
             stmt.setString(3, book.getIsbn());
@@ -87,10 +94,14 @@ public class MySqlBookRepository implements BookRepository {
             deleteRelations(conn, "book_genre", book.getId());
             saveAuthors(conn, book.getId(), book.getAuthors());
             saveGenres(conn, book.getId(), book.getGenres());
+        } catch (java.sql.SQLIntegrityConstraintViolationException e) {
+            throw new RuntimeException("ISBN already exists: " + e.getMessage(), e);
         } catch (Exception e) {
             e.printStackTrace();
+            throw new RuntimeException("Failed to update book: " + e.getMessage(), e);
         }
     }
+
     @Override
     public void delete(Long id) {
         try (Connection conn = DatabaseConnection.getConnection()) {
@@ -104,11 +115,13 @@ public class MySqlBookRepository implements BookRepository {
             e.printStackTrace();
         }
     }
+
     @Override
     public List<Book> findByTitle(String title) {
         String sql = "SELECT id, title, description, isbn FROM book WHERE title LIKE ? ORDER BY id";
         return findBy(sql, title);
     }
+
     @Override
     public List<Book> findByAuthor(String author) {
         String sql = "SELECT DISTINCT b.id, b.title, b.description, b.isbn FROM book b " +
@@ -116,6 +129,7 @@ public class MySqlBookRepository implements BookRepository {
                 "JOIN author a ON ba.id_author = a.id WHERE a.name LIKE ? ORDER BY b.id";
         return findBy(sql, author);
     }
+
     @Override
     public List<Book> findByGenre(String genre) {
         String sql = "SELECT DISTINCT b.id, b.title, b.description, b.isbn FROM book b " +
@@ -128,7 +142,7 @@ public class MySqlBookRepository implements BookRepository {
     public Book findByIsbn(String isbn) {
         String sql = "SELECT id, title, description, isbn FROM book WHERE isbn = ?";
         try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, isbn);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
@@ -153,8 +167,8 @@ public class MySqlBookRepository implements BookRepository {
     private List<Book> findBy(String sql, String keyword) {
         List<Book> books = new ArrayList<>();
         try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(
-                     sql.contains("LIKE") ? sql : "SELECT id, title, description, isbn FROM book WHERE " + sql)) {
+                PreparedStatement stmt = conn.prepareStatement(
+                        sql.contains("LIKE") ? sql : "SELECT id, title, description, isbn FROM book WHERE " + sql)) {
             stmt.setString(1, "%" + keyword + "%");
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
@@ -175,6 +189,7 @@ public class MySqlBookRepository implements BookRepository {
         }
         return books;
     }
+
     private void loadAuthors(Connection conn, Book book) throws SQLException {
         String sql = "SELECT a.id, a.name FROM author a JOIN book_author ba ON a.id = ba.id_author WHERE ba.id_book = ?";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -186,6 +201,7 @@ public class MySqlBookRepository implements BookRepository {
             }
         }
     }
+
     private void loadGenres(Connection conn, Book book) throws SQLException {
         String sql = "SELECT g.id, g.name FROM genre g JOIN book_genre bg ON g.id = bg.id_genre WHERE bg.id_book = ?";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -197,6 +213,7 @@ public class MySqlBookRepository implements BookRepository {
             }
         }
     }
+
     private void saveAuthors(Connection conn, long bookId, List<Author> authors) throws SQLException {
         for (Author author : authors) {
             long authorId = getOrCreate(conn, "author", author.getName());
@@ -208,6 +225,7 @@ public class MySqlBookRepository implements BookRepository {
             }
         }
     }
+
     private void saveGenres(Connection conn, long bookId, List<Genre> genres) throws SQLException {
         for (Genre genre : genres) {
             long genreId = getOrCreate(conn, "genre", genre.getName());
@@ -219,6 +237,7 @@ public class MySqlBookRepository implements BookRepository {
             }
         }
     }
+
     private long getOrCreate(Connection conn, String table, String name) throws SQLException {
         String selectSql = "SELECT id FROM " + table + " WHERE name = ?";
         try (PreparedStatement stmt = conn.prepareStatement(selectSql)) {
@@ -239,6 +258,7 @@ public class MySqlBookRepository implements BookRepository {
         }
         return 0;
     }
+
     private void deleteRelations(Connection conn, String table, long bookId) throws SQLException {
         String sql = "DELETE FROM " + table + " WHERE id_book = ?";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -246,6 +266,5 @@ public class MySqlBookRepository implements BookRepository {
             stmt.executeUpdate();
         }
     }
-
 
 }

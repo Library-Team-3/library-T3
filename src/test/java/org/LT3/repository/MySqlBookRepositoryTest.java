@@ -97,7 +97,7 @@ public class MySqlBookRepositoryTest {
         Book book = new Book(
                 "Delete Me",
                 "To be deleted",
-                "DELETE123",
+                "DEL-" + (System.currentTimeMillis() % 100000),
                 List.of(new Author("Author Test")),
                 List.of(new Genre("Genre Test")));
         mySqlBookRepository.save(book);
@@ -151,7 +151,7 @@ public class MySqlBookRepositoryTest {
 
     @Test
     void testFindBookByAuthor() {
-        List<Book> books = mySqlBookRepository.findByAuthor("Jeff Geerling");
+        List<Book> books = mySqlBookRepository.findByAuthor("Laura Gallego García");
         assertNotNull(books.getFirst());
         assertNotNull(books.getLast());
         assertFalse(books.getFirst().getAuthors().isEmpty());
@@ -176,7 +176,7 @@ public class MySqlBookRepositoryTest {
         Book book = new Book(
                 "New Book With Relations",
                 "To be deleted",
-                "DELETE123",
+                "REL-" + (System.currentTimeMillis() % 100000),
                 new ArrayList<>(List.of()),
                 new ArrayList<>(List.of()));
         book.getAuthors().add(author);
