@@ -13,5 +13,6 @@ public interface BookRepository {
     List<Book> findByTitle(String title);
     List<Book> findByAuthor(String author);
     List<Book> findByGenre(String genre);
+    Book findByIsbn(String isbn);
 
 }
